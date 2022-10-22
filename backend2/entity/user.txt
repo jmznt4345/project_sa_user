@@ -1,0 +1,166 @@
+package entity
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type User struct {
+	gorm.Model
+	Name  string
+	Email string `gorm:"uniqueIndex"`
+
+	Role       Role
+	RoleID     *uint
+	Gender     Gender
+	GenderID   *uint
+	Password   Password `gorm:"foreignkey:PasswordID"`
+	PasswordID *uint
+
+	Request []Request `gorm:"foreignkey:UserID"`
+	Cart    []Cart    `gorm:"foreignkey:UserID"`
+}
+
+type Request struct {
+	gorm.Model
+	Explain    string
+	Date_Start time.Time
+
+	User               User
+	UserID             *uint
+	Room_has_Device    Room_has_Device
+	Room_has_Device_ID *uint
+	Status             Status
+	StatusID           *uint
+}
+
+type Room_has_Device struct {
+	gorm.Model
+
+	Device   Device
+	DeviceID *uint
+	Room     Room
+	RoomID   *uint
+	Status   Status
+	StatusID *uint
+
+	Request []Request `gorm:"foreignkey:Room_has_Device_ID"`
+}
+
+type Device struct {
+	gorm.Model
+
+	Distributor   Distributor
+	DistributorID *uint
+	Device_Name   Device_Name `gorm:"foreignkey:Device_NameID"`
+	Device_NameID *uint
+	Brand         Brand
+	BrandID       *uint
+
+	Room_has_Device []Room_has_Device `gorm:"foreignkey:DeviceID"`
+}
+
+type Cart struct {
+	gorm.Model
+	Start_Work time.Time
+
+	User      User
+	UserID    *uint
+	Status    Status
+	StatusID  *uint
+	Request   Request `gorm:"foreignkey:RequestID"`
+	RequestID *uint
+}
+
+type History struct {
+	gorm.Model
+
+	Cart    Cart `gorm:"foreignkey:CartID"`
+	CartID  *uint
+	Bill    Bill `gorm:"foreignkey:BillID"`
+	BillID  *uint
+	Cause   Cause `gorm:"foreignkey:CauseID"`
+	CauseID *uint
+}
+
+// --------------------------------------------------------
+// อ้างอิง User
+type Role struct {
+	gorm.Model
+	Name string `gorm:"uniqueIndex"`
+	User []User `gorm:"foreignkey:RoleID"`
+}
+
+type Gender struct {
+	gorm.Model
+	Name string `gorm:"uniqueIndex"`
+	User []User `gorm:"foreignkey:GenderID"`
+}
+
+type Password struct {
+	gorm.Model
+	Password string
+}
+
+// อ้างอิง Room has Device
+type Building struct {
+	gorm.Model
+	Name     string `gorm:"uniqueIndex"`
+	Location string
+	Room     []Room `gorm:"foreignkey:BuildingID"`
+}
+
+type Room struct {
+	gorm.Model
+	Name     string `gorm:"uniqueIndex"`
+	Location string
+
+	Building   Building
+	BuildingID *uint
+
+	Room_has_Device []Room_has_Device `gorm:"foreignkey:RoomID"`
+}
+
+// อ้างอิง Device
+type Device_Name struct {
+	gorm.Model
+	Name string
+}
+
+type Distributor struct {
+	gorm.Model
+	Name     string `gorm:"uniqueIndex"`
+	Location string
+
+	Device []Device `gorm:"foreignkey:DistributorID"`
+}
+
+type Brand struct {
+	gorm.Model
+	Name string `gorm:"uniqueIndex"`
+
+	Device []Device `gorm:"foreignkey:BrandID"`
+}
+
+// อ้างอิง Room_has_Device & Cart
+type Status struct {
+	gorm.Model
+	Name string `gorm:"uniqueIndex"`
+
+	Request         []Request         `gorm:"foreignkey:StatusID"`
+	Cart            []Cart            `gorm:"foreignkey:StatusID"`
+	Room_has_Device []Room_has_Device `gorm:"foreignkey:StatusID"`
+}
+
+// อ้างอิง History
+type Bill struct {
+	gorm.Model
+	Price float64
+}
+
+type Cause struct {
+	gorm.Model
+	Caused   string
+	Solution string
+}

@@ -1,0 +1,83 @@
+package entity
+
+import (
+	"gorm.io/gorm"
+
+	"gorm.io/driver/sqlite"
+)
+
+var db *gorm.DB
+
+func DB() *gorm.DB {
+
+	return db
+
+}
+
+func SetupDatabase() {
+
+	database, err := gorm.Open(sqlite.Open("sa-65.db"), &gorm.Config{})
+
+	if err != nil {
+
+		panic("failed to connect database")
+
+	}
+
+	// Migrate the schema
+
+	database.AutoMigrate(
+		&Building{},
+		&Room{},
+		&Role{},
+		&Gender{},
+		&Password{},
+		&Status{},
+		&Bill{},
+		&Cause{},
+		&Device_Name{},
+		&Distributor{},
+
+		&User{},
+		&Device{},
+
+		&Room_has_Device{},
+		&Request{},
+		&Cart{},
+		&History{},
+	)
+
+	db = database
+
+	db.Model(&Role{}).Create(&Role{Name: "ผู้แจ้ง"})
+	db.Model(&Role{}).Create(&Role{Name: "ช่าง"})
+	db.Model(&Role{}).Create(&Role{Name: "Admin"})
+	db.Model(&Gender{}).Create(&Gender{Name: "Male"})
+	db.Model(&Gender{}).Create(&Gender{Name: "Female"})
+	db.Model(&Password{}).Create(&Password{Password: "123"})
+	db.Model(&Password{}).Create(&Password{Password: "321"})
+
+	var reporter Role
+	db.Raw("SELECT * FROM roles WHERE id = ?", 1).Scan(&reporter)
+	var repairer Role
+	db.Raw("SELECT * FROM roles WHERE id = ?", 2).Scan(&repairer)
+
+	var male Gender
+	db.Raw("SELECT * FROM genders WHERE id = ?", 1).Scan(&male)
+	var famale Gender
+	db.Raw("SELECT * FROM genders WHERE id = ?", 2).Scan(&famale)
+
+	var pword1 Password
+	var pword2 Password
+	db.Raw("SELECT * FROM passwords WHERE id = ?", 1).Scan(&pword1)
+	db.Raw("SELECT * FROM passwords WHERE id = ?", 2).Scan(&pword2)
+
+	db.Model(&User{}).Create(&User{Name: "Test00", Email: "test00@example.com", Role: reporter, Gender: male, Password: pword1})
+	db.Model(&User{}).Create(&User{Name: "Test10", Email: "test10@example.com", Role: repairer, Gender: famale, Password: pword2})
+
+	db.Model(&Building{}).Create(&Building{Name: "A", Location: "A"})
+	var building Building
+	db.Raw("SELECT * FROM buildings WHERE id = ?", 1).Scan(&building)
+
+	db.Model(&Room{}).Create(&Room{Name: "A1", Location: "A1", Building: building})
+}
