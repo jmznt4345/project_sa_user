@@ -7,7 +7,7 @@ export interface UsersInterface {
     Phonenumber?: string;
     Password?: string;
 
-    PositionID?: number;
+    Educational_backgroundID?: number;
     RoleID?: number;
     Role?: RoleInterface;
     GenderID?: number;

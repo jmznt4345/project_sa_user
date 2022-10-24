@@ -35,7 +35,7 @@ function Users() {
         valueFormatter: (params) => params.value.Name,
     },
     {
-        field: "Position",
+        field: "Educational_background",
         headerName: "ตำแหน่ง",
         width: 125,
         valueFormatter: (params) => params.value.Name,

@@ -90,9 +90,9 @@ func main() {
 			r.GET("/estimates", controller.ListEstimates)
 			r.GET("/estimate/:id", controller.GetEstimate)
 
-			// position Routes 14
-			r.GET("/positions", controller.ListPositions)
-			r.GET("/position/:id", controller.GetPosition)
+			// Educational_background Routes 14
+			r.GET("/educational_backgrounds", controller.ListEducational_backgrounds)
+			r.GET("/educational_background/:id", controller.GetEducational_background)
 
 			// brand Routes 15
 			r.GET("/brands", controller.ListBrands)

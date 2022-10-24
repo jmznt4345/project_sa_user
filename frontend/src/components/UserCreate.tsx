@@ -14,10 +14,10 @@ import { UsersInterface } from "../models/IUser";
 import { GenderInterface } from "../models/IGender";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { CreateUser, GetGender, GetPosition, GetRole } from "../services/HttpClientService";
+import { CreateUser, GetGender, GetEducational_background, GetRole } from "../services/HttpClientService";
 import React, { useEffect, useState } from "react";
 import { RoleInterface } from "../models/IRole";
-import { PositionInterface } from "../models/IPosition";
+import { Educational_backgroundInterface } from "../models/IEducational_background";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -33,7 +33,7 @@ function UserCreate() {
   const [error, setError] = React.useState(false);
   const [gender, setGender] = React.useState<GenderInterface[]>([]);
   const [role, setRole] = React.useState<GenderInterface[]>([]);
-  const [position, setPosition] = React.useState<GenderInterface[]>([]);
+  const [educational_background, setEducational_background] = React.useState<GenderInterface[]>([]);
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -67,7 +67,7 @@ function UserCreate() {
       Phonenumber: user.Phonenumber,
       Password: user.Password,
 
-      PositionID: convertType(user.PositionID),
+      Educational_backgroundID: convertType(user.Educational_backgroundID),
       RoleID: convertType(user.RoleID),
       GenderID: convertType(user.GenderID),
     };
@@ -113,21 +113,21 @@ function UserCreate() {
     }
   };
 
-  const getPosition = async () => {
-    let res = await GetPosition();
+  const getEducational_background = async () => {
+    let res = await GetEducational_background();
     if (res) {
-      setPosition(res);
-      console.log("Load Position Complete");
+      setEducational_background(res);
+      console.log("Load Educational_background Complete");
     }
     else {
-      console.log("Load Position InComplete!!!!");
+      console.log("Load Educational_background InComplete!!!!");
     }
   };
 
   useEffect(() => {
     getRole();
     getGender();
-    getPosition();
+    getEducational_background();
   }, []);
 
   return (
@@ -287,18 +287,18 @@ function UserCreate() {
 
           <Grid item xs={6}>
             <FormControl fullWidth variant="outlined">
-              <p>Position</p>
+              <p>Educational_background</p>
               <Select
                 required
                 defaultValue={"0"}
                 // value={request.RHD_ID + ""}
                 onChange={handleChange}
                 inputProps={{
-                  name: "PositionID",
+                  name: "Educational_backgroundID",
                 }}
               >
-                <MenuItem value={"0"}>กรุณาเลือกตำแหน่ง</MenuItem>
-                {position?.map((item: PositionInterface) =>
+                <MenuItem value={"0"}>กรุณาเลือกวุฒิการศึกษา</MenuItem>
+                {educational_background?.map((item: Educational_backgroundInterface) =>
                   <MenuItem
                     key={item.ID}
                     value={item.ID}

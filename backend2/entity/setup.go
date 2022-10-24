@@ -21,7 +21,7 @@ func SetupDatabase() {
 	database.AutoMigrate(
 		&Role{},
 		&Gender{},
-		&Position{},
+		&Educational_background{},
 		&JobType{},
 		&Distributor{},
 		&Building{},
@@ -47,14 +47,9 @@ func SetupDatabase() {
 	db.Model(&Role{}).Create(&Role{Name: "Admin"})
 	db.Model(&Gender{}).Create(&Gender{Name: "Male"})
 	db.Model(&Gender{}).Create(&Gender{Name: "Female"})
-	db.Model(&Position{}).Create(&Position{Name: "A"})
-	db.Model(&Position{}).Create(&Position{Name: "B"})
-	db.Model(&Position{}).Create(&Position{Name: "Header"})
-	db.Model(&Position{}).Create(&Position{Name: "Employee"})
-	db.Model(&Position{}).Create(&Position{Name: "Teacher"})
-	db.Model(&Position{}).Create(&Position{Name: "Teaching Assistant"})
-	db.Model(&Position{}).Create(&Position{Name: "Student"})
-	db.Model(&Position{}).Create(&Position{Name: "Officer"})
+	db.Model(&Educational_background{}).Create(&Educational_background{Name: "ปริญญาเอก"})
+	db.Model(&Educational_background{}).Create(&Educational_background{Name: "ปริญญาโท"})
+	db.Model(&Educational_background{}).Create(&Educational_background{Name: "ปริญญาตรี"})
 	db.Model(&Distributor{}).Create(&Distributor{Name: "ร้านA", Location: ".."})
 	db.Model(&Distributor{}).Create(&Distributor{Name: "ร้านB", Location: ".."})
 	db.Model(&Brand{}).Create(&Brand{Name: "Brand A"})
@@ -71,8 +66,10 @@ func SetupDatabase() {
 	db.Raw("SELECT * FROM roles WHERE name = ?", "Tech").Scan(&r_tech)
 	db.Raw("SELECT * FROM roles WHERE name = ?", "Admin").Scan(&r_admin)
 
-	var position Position
-	db.Raw("SELECT * FROM Positions WHERE Position = ?", "A").Scan(&position)
+	var educational_background_bachelor, educational_background_master, educational_background_doctor Educational_background
+	db.Raw("SELECT * FROM Educational_backgrounds WHERE name = ?", "ปริญญาเอก").Scan(&educational_background_doctor)
+	db.Raw("SELECT * FROM Educational_backgrounds WHERE name = ?", "ปริญญาโท").Scan(&educational_background_master)
+	db.Raw("SELECT * FROM Educational_backgrounds WHERE name = ?", "ปริญญาตรี").Scan(&educational_background_bachelor)
 
 	db.Model(&User{}).Create(&User{
 		Name:         "Test",
@@ -81,7 +78,7 @@ func SetupDatabase() {
 		Password:     string(password),
 		Role:         r_user,
 		Gender:       male,
-		Position:     position,
+		Educational_background:     educational_background_bachelor,
 	})
 
 	db.Model(&User{}).Create(&User{
@@ -91,7 +88,7 @@ func SetupDatabase() {
 		Password:     string(password),
 		Role:         r_tech,
 		Gender:       female,
-		Position:     position,
+		Educational_background:     educational_background_bachelor,
 	})
 
 	var user User

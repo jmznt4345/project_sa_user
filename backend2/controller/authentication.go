@@ -24,7 +24,7 @@ type SignUpPayload struct {
 
 	RoleID     uint `json:"RoleID"`
 	GenderID   uint `json:"GenderID"`
-	PositionID uint `json:"PositionID"`
+	Educational_backgroundID uint `json:"Educational_backgroundID"`
 }
 
 // LoginResponse token response
@@ -85,9 +85,9 @@ func CreateUser(c *gin.Context) {
 	var user entity.User
     var gender entity.Gender
     var role entity.Role
-    var position entity.Position
+    var educational_background entity.Educational_background
 	var payload SignUpPayload
-	
+
     // ผลลัพธ์ที่ได้จากขั้นตอนที่ 8 จะถูก bind เข้าตัวแปร watchVideo
     if err := c.ShouldBindJSON(&user); err != nil {
     	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -106,9 +106,9 @@ func CreateUser(c *gin.Context) {
     	return
     }
 
-    // 11: ค้นหา position ด้วย id
-    if tx := entity.DB().Where("id = ?", user.PositionID).First(&position); tx.RowsAffected == 0 {
-    	c.JSON(http.StatusBadRequest, gin.H{"error": "position not found"})
+    // 11: ค้นหา Educational_background ด้วย id
+    if tx := entity.DB().Where("id = ?", user.Educational_backgroundID).First(&educational_background); tx.RowsAffected == 0 {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": "educational_background not found"})
     	return
     }
 
@@ -120,9 +120,9 @@ func CreateUser(c *gin.Context) {
 	}
     //12: สร้าง WatchVideo
     wv := entity.User{
-    	Role:      			role,            // โยงความสัมพันธ์กับ Entity Role
-    	Gender:             gender,               // โยงความสัมพันธ์กับ Entity Gender
-    	Position:           position,           // โยงความสัมพันธ์กับ Entity Position
+    	Role:      					role,            // โยงความสัมพันธ์กับ Entity Role
+    	Gender:             		gender,               // โยงความสัมพันธ์กับ Entity Gender
+    	Educational_background:     educational_background,           // โยงความสัมพันธ์กับ Entity Educational_background
 
 		Name:				payload.Name,
 		Email: 				payload.Email,
@@ -158,7 +158,7 @@ func CreateUser(c *gin.Context) {
 
 	// user.RoleID = &payload.RoleID
 	// user.GenderID = &payload.GenderID
-	// user.PositionID = &payload.PositionID
+	// user.Educational_backgroundID = &payload.Educational_backgroundID
 
 	// if err := entity.DB().Create(&user).Error; err != nil {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

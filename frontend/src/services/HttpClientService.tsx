@@ -135,7 +135,7 @@ async function GetGender() {
   return res;
 }
 
-async function GetPosition() {
+async function GetEducational_background() {
 
   const requestOptions = {
     method: "GET",
@@ -145,7 +145,7 @@ async function GetPosition() {
     },
   };
 
-  let res = await fetch(`${apiUrl}/positions`, requestOptions)
+  let res = await fetch(`${apiUrl}/educational_backgrounds`, requestOptions)
     .then((response) => response.json())
     .then((res) => {
       if (res.data) {
@@ -185,7 +185,7 @@ export {
   CreateUser,
   GetRolebyUser,
   GetGender,
-  GetPosition,
+  GetEducational_background,
   GetRole,
   ListUsers,
 };
