@@ -82,34 +82,88 @@ func Login(c *gin.Context) {
 
 // POST /create
 func CreateUser(c *gin.Context) {
-	var payload SignUpPayload
 	var user entity.User
+    var gender entity.Gender
+    var role entity.Role
+    var position entity.Position
+	var payload SignUpPayload
+	
+    // ผลลัพธ์ที่ได้จากขั้นตอนที่ 8 จะถูก bind เข้าตัวแปร watchVideo
+    if err := c.ShouldBindJSON(&user); err != nil {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    	return
+    }
 
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    // 9: ค้นหา gender ด้วย id
+    if tx := entity.DB().Where("id = ?", user.GenderID).First(&gender); tx.RowsAffected == 0 {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+    	return
+    }
 
-	// เข้ารหัสลับรหัสผ่านที่ผู้ใช้กรอกก่อนบันทึกลงฐานข้อมูล
+    // 10: ค้นหา role ด้วย id
+    if tx := entity.DB().Where("id = ?", user.RoleID).First(&role); tx.RowsAffected == 0 {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": "role not found"})
+    	return
+    }
+
+    // 11: ค้นหา position ด้วย id
+    if tx := entity.DB().Where("id = ?", user.PositionID).First(&position); tx.RowsAffected == 0 {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": "position not found"})
+    	return
+    }
+
+	 // เข้ารหัสลับรหัสผ่านที่ผู้ใช้กรอกก่อนบันทึกลงฐานข้อมูล
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 14)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error hashing password"})
 		return
 	}
+    //12: สร้าง WatchVideo
+    wv := entity.User{
+    	Role:      			role,            // โยงความสัมพันธ์กับ Entity Role
+    	Gender:             gender,               // โยงความสัมพันธ์กับ Entity Gender
+    	Position:           position,           // โยงความสัมพันธ์กับ Entity Position
 
-	user.Name = payload.Name
-	user.Email = payload.Email
-	user.Password = string(hashPassword)
-	user.Phonenumber = payload.Phonenumber
+		Name:				payload.Name,
+		Email: 				payload.Email,
+		Password:			string(hashPassword),
+		Phonenumber:		payload.Phonenumber,
+    }
 
-	user.RoleID = &payload.RoleID
-	user.GenderID = &payload.GenderID
-	user.PositionID = &payload.PositionID
+    // 13: บันทึก
+    if err := entity.DB().Create(&wv).Error; err != nil {
+    	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    	return
+    }
+    c.JSON(http.StatusOK, gin.H{"data": wv})
+	// var payload SignUpPayload
+	// var user entity.User
 
-	if err := entity.DB().Create(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// if err := c.ShouldBindJSON(&payload); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	c.JSON(http.StatusCreated, gin.H{"data": user})
+	// // เข้ารหัสลับรหัสผ่านที่ผู้ใช้กรอกก่อนบันทึกลงฐานข้อมูล
+	// hashPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 14)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "error hashing password"})
+	// 	return
+	// }
+
+	// user.Name = payload.Name
+	// user.Email = payload.Email
+	// user.Password = string(hashPassword)
+	// user.Phonenumber = payload.Phonenumber
+
+	// user.RoleID = &payload.RoleID
+	// user.GenderID = &payload.GenderID
+	// user.PositionID = &payload.PositionID
+
+	// if err := entity.DB().Create(&user).Error; err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	// c.JSON(http.StatusCreated, gin.H{"data": user})
 }
